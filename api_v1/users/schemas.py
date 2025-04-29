@@ -1,28 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
-from core.models.enums import ExpenseCategory
+from expenses.schemas import ExpenseRead
 
-class ExpenseBase(BaseModel):
-    title: str
-    amount: float
-    description: str | None = Field(default=None, max_length=255)
-    category: ExpenseCategory
-    
-    class Config:
-        orm_mode = True
-    
-    
-class ExpenseCreate(ExpenseBase):
-    pass
-
-
-class ExpenseRead(ExpenseBase):
-    id: int
-    created_at: datetime
-    
-    class Config:
-        orm_mode = True
-        
         
 class UserBase(BaseModel):
     username: str
@@ -37,9 +16,7 @@ class UserCreate(UserBase):
     
     
 class UserUpdate(UserCreate):
-    
-    class Config:
-        orm_mode = True
+    pass
         
     
 class UserRead(UserBase):
@@ -47,10 +24,6 @@ class UserRead(UserBase):
     created_at: datetime
     expenses: list[ExpenseRead] = []
     
-    class Config:
-        orm_mode = True
-        
         
 class UserOut(UserCreate, UserRead):
-    class Config:
-        orm_mode = True
+    pass

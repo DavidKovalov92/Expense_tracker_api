@@ -10,12 +10,12 @@ from api_v1.users.schemas import (
 from core.models.db_helper import db_helper
 
 
-router = APIRouter(prefix="/api/v1", tags=["users"])
+router = APIRouter(prefix="/api/v1", tags=["Users"])
 
 get_db = db_helper.get_scoped_session
 
 
-@router.get("/users/", response_model=list[UserRead])
+
 @router.get("/users/", response_model=list[UserRead])
 def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_users(db, skip=skip, limit=limit)
