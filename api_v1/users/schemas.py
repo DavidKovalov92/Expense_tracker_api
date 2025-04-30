@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
-from expenses.schemas import ExpenseRead
+from api_v1.expenses.schemas import ExpenseRead
+
 
         
 class UserBase(BaseModel):
