@@ -8,13 +8,22 @@ from jwt.exceptions import InvalidTokenError
 from fastapi import APIRouter, Form, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from api_v1.demo_auth.helpers import create_access_token, create_refresh_token
+from api_v1.demo_auth.helpers import (
+    ACCESS_TOKEN_TYPE,
+    REFRESH_TOKEN_TYPE,
+    create_access_token,
+    create_refresh_token,
+    TOKEN_TYPE_FIELD,
+)
+from api_v1.demo_auth.validation import get_current_auth_user, get_current_auth_user_for_refresh
 from auth import utils
 from ..users.schemas import UserCreate, UserLogin, UserRead
 from core.models.db_helper import db_helper
 from core.security.hash_password import verify_password
 from core.models.models import User
 
+
+http_bearer = HTTPBearer(auto_error=False)
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/v1/jwt/login",
 )
@@ -26,9 +35,12 @@ class TokenInfo(BaseModel):
     token_type: str = "Bearer"
 
 
-router = APIRouter(prefix="/api/v1/jwt", tags=["JWT"])
+router = APIRouter(
+    prefix="/api/v1/jwt",
+    tags=["JWT"],
+    dependencies=[Depends(http_bearer)],
+)
 get_db = db_helper.get_scoped_session
-
 
 
 def validate_auth_user(
@@ -47,29 +59,6 @@ def validate_auth_user(
     return UserRead.from_orm(user)
 
 
-def get_current_token_payload(
-    token: str = Depends(oauth2_scheme),
-):
-    try:
-        return utils.decode_jwt(token=token)
-    except InvalidTokenError as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-        ) from e
-
-
-def get_current_auth_user(
-    payload: dict = Depends(get_current_token_payload),
-    db: Session = Depends(get_db),
-):
-    if user := db.query(User).filter(User.username == payload.get("sub")).first():
-        return user
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid authentication credentials",
-    )
-
 
 @router.post("/login", response_model=TokenInfo)
 def auth_user_issue_jwt(
@@ -80,6 +69,21 @@ def auth_user_issue_jwt(
     return TokenInfo(
         access_token=access_token,
         refresh_token=refresh_token,
+    )
+
+
+@router.post(
+    "/refresh",
+    response_model=TokenInfo,
+    response_model_exclude_none=True,
+)
+def auth_refresh_jwt(
+    token: str = Depends(oauth2_scheme),
+    user: UserLogin = Depends(get_current_auth_user_for_refresh)
+):
+    access_token = create_access_token(user=user)
+    return TokenInfo(
+        access_token=access_token,
     )
 
 
