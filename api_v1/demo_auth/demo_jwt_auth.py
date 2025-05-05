@@ -8,6 +8,7 @@ from jwt.exceptions import InvalidTokenError
 from fastapi import APIRouter, Form, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from api_v1.demo_auth.helpers import create_access_token, create_refresh_token
 from auth import utils
 from ..users.schemas import UserCreate, UserLogin, UserRead
 from core.models.db_helper import db_helper
@@ -21,14 +22,14 @@ oauth2_scheme = OAuth2PasswordBearer(
 
 class TokenInfo(BaseModel):
     access_token: str
-    token_type: str
+    refresh_token: str | None = None
+    token_type: str = "Bearer"
 
 
 router = APIRouter(prefix="/api/v1/jwt", tags=["JWT"])
 get_db = db_helper.get_scoped_session
 
 
-def create_access_token():
 
 def validate_auth_user(
     username: str = Form(),
@@ -71,16 +72,14 @@ def get_current_auth_user(
 
 
 @router.post("/login", response_model=TokenInfo)
-def auth_user_issue_jwt(user: UserLogin = Depends(validate_auth_user)):
-    jwt_payload = {
-                "sub": user.username,
-                "username": user.username,
-                "email": user.email,
-            }
-    token = utils.encode_jwt(jwt_payload)
+def auth_user_issue_jwt(
+    user: UserLogin = Depends(validate_auth_user),
+):
+    access_token = create_access_token(user=user)
+    refresh_token = create_refresh_token(user=user)
     return TokenInfo(
-        access_token=token,
-        token_type="Bearer",
+        access_token=access_token,
+        refresh_token=refresh_token,
     )
 
 
