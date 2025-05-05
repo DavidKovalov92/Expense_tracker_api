@@ -5,9 +5,9 @@ from api_v1.users.schemas import (
     UserCreate,
     UserOut,
     UserRead,
-    UserUpdate,
 )
 from core.models.db_helper import db_helper
+from core.security.hash_password import hash_password
 
 
 router = APIRouter(prefix="/api/v1", tags=["Users"])
@@ -42,7 +42,7 @@ def create_user(user_data: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.put("/users/{user_id}", response_model=UserOut)
-def update_user(user_id: int, user_data: UserUpdate, db: Session = Depends(get_db)):
+def update_user(user_id: int, user_data: UserCreate, db: Session = Depends(get_db)):
     user = crud.update_user(db, user_id, user_data)
     if not user:
         raise HTTPException(
@@ -53,7 +53,7 @@ def update_user(user_id: int, user_data: UserUpdate, db: Session = Depends(get_d
 
 @router.patch("/users/{user_id}", response_model=UserOut)
 def partial_update_user(
-    user_id: int, user_data: UserUpdate, db: Session = Depends(get_db)
+    user_id: int, user_data: UserCreate, db: Session = Depends(get_db)
 ):
     user = crud.update_user(db, user_id, user_data)
     if not user:

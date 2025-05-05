@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr, Field
+import email
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from datetime import datetime
 from api_v1.expenses.schemas import ExpenseRead
 
@@ -6,18 +7,17 @@ from api_v1.expenses.schemas import ExpenseRead
         
 class UserBase(BaseModel):
     username: str
-    email: EmailStr
+    email: EmailStr | None = None
     
-    class Config:
-        orm_mode = True
-    
+    model_config = ConfigDict(from_attributes=True)
 
 class UserCreate(UserBase):
     password: str = Field(min_length=8, max_length=255)
     
+
     
-class UserUpdate(UserCreate):
-    pass
+class UserLogin(UserBase):
+    password: str
         
     
 class UserRead(UserBase):
@@ -25,6 +25,11 @@ class UserRead(UserBase):
     created_at: datetime
     expenses: list[ExpenseRead] = []
     
+
+    
+    
+    
         
-class UserOut(UserCreate, UserRead):
+class UserOut(UserCreate, UserRead, UserBase):
     pass
+

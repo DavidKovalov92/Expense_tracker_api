@@ -1,4 +1,4 @@
-from api_v1.users.schemas import UserCreate, UserUpdate
+from api_v1.users.schemas import UserCreate
 from core.models.models import User
 from core.security.hash_password import hash_password
 from sqlalchemy.orm import Session
@@ -16,7 +16,7 @@ def create_user(db: Session, user_data: UserCreate):
     return user
 
 
-def update_user(db: Session, user_id: int, user_data: UserUpdate):
+def update_user(db: Session, user_id: int, user_data: UserCreate):
     user = db.get(User, user_id)
     if not user:
         return None

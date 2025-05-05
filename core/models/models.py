@@ -1,4 +1,5 @@
 from typing import List
+from pydantic import BaseModel
 from sqlalchemy import Enum, ForeignKey
 from sqlalchemy import Column, Float, Integer, String, DateTime, func
 from sqlalchemy.orm import relationship, Mapped, mapped_column
@@ -25,3 +26,5 @@ class Expense(Base):
     
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     user: Mapped[User] = relationship("User", back_populates="expenses")
+
+    
