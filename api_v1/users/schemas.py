@@ -24,11 +24,7 @@ class UserRead(UserBase):
     id: int
     created_at: datetime
     expenses: list[ExpenseRead] = []
-    
 
-    
-    
-    
         
 class UserOut(UserCreate, UserRead, UserBase):
     pass
