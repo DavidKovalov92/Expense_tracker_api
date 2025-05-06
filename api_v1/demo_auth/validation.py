@@ -22,9 +22,10 @@ from core.models.db_helper import db_helper
 from core.security.hash_password import verify_password
 from core.models.models import User
 
-
+http_bearer = HTTPBearer(auto_error=False)
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/v1/jwt/login",
+    auto_error=False,
 )
 
 get_db = db_helper.get_scoped_session

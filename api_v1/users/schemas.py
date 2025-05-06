@@ -1,13 +1,14 @@
-import email
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from datetime import datetime
 from api_v1.expenses.schemas import ExpenseRead
+from core.models.enums import UserRole
 
 
         
 class UserBase(BaseModel):
     username: str
     email: EmailStr | None = None
+    role: UserRole = UserRole.USER
     
     model_config = ConfigDict(from_attributes=True)
 

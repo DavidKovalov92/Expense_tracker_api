@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from core.models.enums import ExpenseCategory
 
 class ExpenseBase(BaseModel):
@@ -8,8 +8,7 @@ class ExpenseBase(BaseModel):
     description: str | None = Field(default=None, max_length=255)
     category: ExpenseCategory
     
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
     
     
 class ExpenseCreate(ExpenseBase):
@@ -20,6 +19,7 @@ class ExpenseRead(ExpenseBase):
     id: int
     created_at: datetime
     
+    model_config = ConfigDict(from_attributes=True)
         
         
 class ExpenseUpdate(ExpenseBase):
@@ -32,5 +32,7 @@ class ExpenseUpdate(ExpenseBase):
 class ExpenseOut(ExpenseBase): 
     id: int
     created_at: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
 
         

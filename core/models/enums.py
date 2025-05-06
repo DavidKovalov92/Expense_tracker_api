@@ -8,3 +8,8 @@ class ExpenseCategory(Enum):
     CLOTHING = "Clothing"
     HEALTH = "Health"
     OTHERS = "Others"
+    
+    
+class UserRole(str, Enum):
+    USER = "user"
+    ADMIN = "admin"
