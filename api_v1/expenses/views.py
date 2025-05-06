@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from api_v1.expenses import crud
+from api_v1.expenses.filters import ExpenseFilter
 from .schemas import ExpenseBase, ExpenseCreate, ExpenseRead
 from core.models.db_helper import db_helper
 from api_v1.demo_auth.validation import get_current_auth_user
@@ -18,10 +19,18 @@ def get_expense(
     user_id: int,
     skip: int = 0,
     limit: int = 100,
+    filters: ExpenseFilter = Depends(),
     db: Session = Depends(get_db),
     current_user: Optional[User] = Depends(get_optional_user)
 ):
-    db_expense = crud.get_expenses_for_user(db, user_id=user_id, skip=skip, limit=limit)
+    db_expense = crud.get_expenses_for_user(
+        db=db,
+        user_id=user_id,
+        skip=skip,
+        limit=limit,
+        from_date=filters.start_date,
+        to_date=filters.end_date
+    )
     if not db_expense:
         raise HTTPException(status_code=404, detail="No expenses found")
     return db_expense
