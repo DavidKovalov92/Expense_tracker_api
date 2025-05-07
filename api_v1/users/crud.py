@@ -3,6 +3,7 @@ from core.models.models import User
 from core.security.hash_password import hash_password
 from sqlalchemy.orm import Session
 
+
 def create_user(db: Session, user_data: UserCreate):
     hashed_password = hash_password(user_data.password)
     user = User(
@@ -24,11 +25,10 @@ def update_user(db: Session, user_id: int, user_data: UserCreate):
         user.username = user_data.username
     if user_data.email is not None:
         user.email = user_data.email
-        
+
     db.commit()
     db.refresh(user)
     return user
-    
 
 
 def delete_user(db: Session, user_id: int):

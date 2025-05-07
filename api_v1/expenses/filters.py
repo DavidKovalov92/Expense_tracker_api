@@ -2,12 +2,15 @@ from fastapi import Depends, HTTPException, Query
 from datetime import datetime, timedelta
 from typing import Optional
 
+
 class ExpenseFilter:
     def __init__(
         self,
-        period: Optional[str] = Query(default=None, enum=["week", "month", "3months", "custom"]),
+        period: Optional[str] = Query(
+            default=None, enum=["week", "month", "3months", "custom"]
+        ),
         start_date: Optional[datetime] = Query(default=None),
-        end_date: Optional[datetime] = Query(default=None)
+        end_date: Optional[datetime] = Query(default=None),
     ):
         now = datetime.utcnow()
 
@@ -22,7 +25,10 @@ class ExpenseFilter:
             self.end_date = now
         elif period == "custom":
             if not (start_date and end_date):
-                raise HTTPException(status_code=400, detail="Custom period requires both start_date and end_date")
+                raise HTTPException(
+                    status_code=400,
+                    detail="Custom period requires both start_date and end_date",
+                )
             self.start_date = start_date
             self.end_date = end_date
         else:

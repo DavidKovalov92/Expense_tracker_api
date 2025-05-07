@@ -15,7 +15,7 @@ class DatabaseHelper:
             autocommit=False,
             expire_on_commit=False,
         )
-        
+
     def get_scoped_session(self):
         session = scoped_session(
             session_factory=self.session_factory,

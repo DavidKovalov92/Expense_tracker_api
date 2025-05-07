@@ -8,14 +8,14 @@ from jwt.exceptions import InvalidTokenError
 from fastapi import APIRouter, Form, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from api_v1.demo_auth.helpers import (
+from api_v1.jwt_auth.helpers import (
     ACCESS_TOKEN_TYPE,
     REFRESH_TOKEN_TYPE,
     create_access_token,
     create_refresh_token,
     TOKEN_TYPE_FIELD,
 )
-from api_v1.demo_auth.validation import (
+from api_v1.jwt_auth.validation import (
     get_current_auth_user,
     get_current_auth_user_for_refresh,
 )

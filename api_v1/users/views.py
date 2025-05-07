@@ -1,6 +1,10 @@
 from typing import Optional
-from api_v1.demo_auth.validation import get_current_auth_user
-from api_v1.limits.validators import is_global_rate_limited, is_rate_limited, rate_limit_ip
+from api_v1.jwt_auth.validation import get_current_auth_user
+from api_v1.limits.validators import (
+    is_global_rate_limited,
+    is_rate_limited,
+    rate_limit_ip,
+)
 from api_v1.users import crud
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
@@ -58,13 +62,8 @@ def get_user(
     return user
 
 
-
 @router.post("/users/", response_model=UserOut)
-def create_user(
-    user_data: UserCreate,
-    request: Request,
-    db: Session = Depends(get_db)
-):
+def create_user(user_data: UserCreate, request: Request, db: Session = Depends(get_db)):
     client_ip = request.client.host if request and request.client else None
     rate_limit_ip(client_ip or "")
 
@@ -84,8 +83,6 @@ def create_user(
     return new_user
 
 
-
-
 @router.put("/users/{user_id}", response_model=UserOut)
 def update_user(
     user_id: int,
@@ -94,13 +91,13 @@ def update_user(
     current_user: User = Depends(get_current_auth_user),
 ):
     if current_user is not None:
-        is_rate_limited(current_user.id)  # Для конкретного користувача
+        is_rate_limited(current_user.id)
     elif current_user is None:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Too many requests",
-            )
-    is_global_rate_limited()  # Для всього сервісу
+        )
+    is_global_rate_limited()
     is_owner_or_admin(user_id)(current_user)
     user = crud.update_user(db, user_id, user_data)
     if not user:
@@ -118,13 +115,13 @@ def partial_update_user(
     current_user: User = Depends(get_current_auth_user),
 ):
     if current_user is not None:
-        is_rate_limited(current_user.id)  # Для конкретного користувача
+        is_rate_limited(current_user.id)
     elif current_user is None:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Too many requests",
-            )
-    is_global_rate_limited()  # Для всього сервісу
+        )
+    is_global_rate_limited()
     is_owner_or_admin(user_id)(current_user)
     user = crud.update_user(db, user_id, user_data)
     if not user:
@@ -141,13 +138,13 @@ def delete_user(
     current_user: User = Depends(get_current_auth_user),
 ):
     if current_user is not None:
-        is_rate_limited(current_user.id)  # Для конкретного користувача
+        is_rate_limited(current_user.id)
     elif current_user is None:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Too many requests",
-            )
-    is_global_rate_limited()  # Для всього сервісу
+        )
+    is_global_rate_limited()
     is_owner_or_admin(user_id)(current_user)
     success = crud.delete_user(db, user_id)
     if not success:

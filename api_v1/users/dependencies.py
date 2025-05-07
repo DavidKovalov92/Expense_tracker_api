@@ -5,10 +5,10 @@ from enum import Enum
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from functools import wraps
 
-from api_v1.demo_auth.validation import get_current_auth_user
+from api_v1.jwt_auth.validation import get_current_auth_user
 from core.models.enums import UserRole
 from core.models.models import User
-from api_v1.demo_auth.validation import http_bearer
+from api_v1.jwt_auth.validation import http_bearer
 
 
 def role_required(required_roles: List[UserRole]):
@@ -23,15 +23,13 @@ def role_required(required_roles: List[UserRole]):
     return wrapper
 
 
-# Альтернатива: декоратор для проверки аутентификации + ролей
 def auth_required(required_roles: Optional[List[UserRole]] = None):
     def decorator(endpoint):
         @wraps(endpoint)
         async def wrapped(*args, **kwargs):
-            # Проверяем аутентификацию
+
             user = get_current_auth_user()
 
-            # Проверяем роли (если указаны)
             if (
                 required_roles
                 and user.role not in required_roles

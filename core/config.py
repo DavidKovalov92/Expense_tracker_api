@@ -11,11 +11,11 @@ class AuthJWT(BaseModel):
     algorithm: str = "RS256"
     access_token_expires_minutes: int = 15
     refresh_token_expires_days: int = 30
-    
+
+
 class Setting(BaseSettings):
     db_url: str = "postgresql://david:1234@localhost:5432/expense_db"
     auth_jwt: AuthJWT = AuthJWT()
 
- 
-    
+
 settings = Setting()

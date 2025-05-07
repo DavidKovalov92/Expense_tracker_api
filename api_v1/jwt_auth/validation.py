@@ -9,7 +9,7 @@ from jwt.exceptions import InvalidTokenError
 from fastapi import APIRouter, Form, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from api_v1.demo_auth.helpers import (
+from api_v1.jwt_auth.helpers import (
     ACCESS_TOKEN_TYPE,
     REFRESH_TOKEN_TYPE,
     create_access_token,
@@ -39,6 +39,7 @@ def validate_token_type(payload: dict, token_type: str):
         detail="Invalid token type",
     )
 
+
 def get_current_token_payload(
     token: str = Depends(oauth2_scheme),
 ):
@@ -49,8 +50,8 @@ def get_current_token_payload(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials",
         ) from e
-        
-        
+
+
 def get_user_by_token_sub(payload: dict, db: Session):
     if user := db.query(User).filter(User.username == payload.get("sub")).first():
         return user
@@ -58,8 +59,8 @@ def get_user_by_token_sub(payload: dict, db: Session):
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid authentication credentials",
     )
-        
-        
+
+
 def get_current_auth_user(
     payload: dict = Depends(get_current_token_payload),
     db: Session = Depends(get_db),

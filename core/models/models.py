@@ -7,8 +7,8 @@ from .base import Base
 from .enums import ExpenseCategory, UserRole
 
 class User(Base):
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # Змінив на id
-    username: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)  # Додано унікальність для username
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    username: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.USER, server_default=UserRole.USER)
@@ -18,7 +18,7 @@ class User(Base):
     
     
 class Expense(Base):
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # Додано первинний ключ для таблиці Expense
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(100), nullable=False)
     amount: Mapped[float] = mapped_column(Float, nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=True)

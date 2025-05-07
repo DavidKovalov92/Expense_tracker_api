@@ -3,6 +3,7 @@ from core.models.models import Expense
 from sqlalchemy.orm import Session
 from datetime import datetime
 
+
 def get_expenses(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Expense).offset(skip).limit(limit).all()
 
@@ -31,7 +32,7 @@ def get_expenses_for_user(
     skip: int = 0,
     limit: int = 100,
     from_date: datetime | None = None,
-    to_date: datetime | None = None
+    to_date: datetime | None = None,
 ):
     query = db.query(Expense).filter(Expense.user_id == user_id)
 
@@ -41,7 +42,6 @@ def get_expenses_for_user(
         query = query.filter(Expense.created_at <= to_date)
 
     return query.offset(skip).limit(limit).all()
-
 
 
 def update_expense(db: Session, expense_id: int, expense_data: ExpenseBase):
@@ -56,11 +56,11 @@ def update_expense(db: Session, expense_id: int, expense_data: ExpenseBase):
         expense.description = expense_data.description
     if expense_data.category is not None:
         expense.category = expense_data.category
-        
+
     db.commit()
     db.refresh(expense)
     return expense
-    
+
 
 def delete_expense(db: Session, expense_id: int):
     expense = db.get(Expense, expense_id)
